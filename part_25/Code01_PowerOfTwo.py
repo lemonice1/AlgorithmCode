@@ -1,0 +1,28 @@
+# -*- coding: utf-8 -*-
+# Python 3 算法实现；中文题意、算法说明与原课程顺序对应。
+from pathlib import Path as _Path
+import sys as _sys
+_root = str(_Path(__file__).resolve().parent.parent)
+if _root not in _sys.path:
+    _sys.path.insert(0, _root)
+from algorithm_runtime import *
+from _python_support import jmatches, jselect
+
+_sys.setrecursionlimit(max(_sys.getrecursionlimit(), 1000000))
+
+# Brian Kernighan算法
+# 提取出二进制里最右侧的1
+# 判断一个整数是不是2的幂
+# 测试链接 : https://leetcode.cn/problems/power-of-two/
+class Code01_PowerOfTwo:
+    __java_fields__ = {}
+    @staticmethod
+    def isPowerOfTwo(n):
+        n = jcast('int', n)
+        return jcast('boolean', ((n > 0) and (n == jcast('int', (n & jcast('int', (-n)))))))
+
+    def __init__(self, *args, _java_ctor=None):
+        if args:
+            raise TypeError('This class has a no-argument constructor')
+
+

@@ -1,0 +1,136 @@
+# -*- coding: utf-8 -*-
+# Python 3 算法实现；中文题意、算法说明与原课程顺序对应。
+from pathlib import Path as _Path
+import sys as _sys
+_root = str(_Path(__file__).resolve().parent.parent)
+if _root not in _sys.path:
+    _sys.path.insert(0, _root)
+from algorithm_runtime import *
+from _python_support import jmatches, jselect
+
+_sys.setrecursionlimit(max(_sys.getrecursionlimit(), 1000000))
+
+# 二元一次不定方程模版
+# 给定a、b、c，求解方程ax + by = c
+# 如果方程无解打印-1
+# 如果方程无正整数解，但是有整数解
+# 打印这些整数解中，x的最小正数值，y的最小正数值
+# 如果方程有正整数解，打印正整数解的数量，同时打印所有正整数解中，
+# x的最小正数值，y的最小正数值，x的最大正数值，y的最大正数值
+# 1 <= a、b、c <= 10^9
+# 测试链接 : https://www.luogu.com.cn/problem/P5656
+# 下面为对应算法的 Python 实现，保留原算法逻辑
+# 本实现包含较大的数组或状态集合，内存开销取决于数据规模和 Python 容器表示
+# 这是洛谷平台没有照顾各种语言的实现所导致的
+# 在真正笔试、比赛时，一定是兼顾各种语言的，该实现是一定正确的
+# 对应实现可参考 Code01_DiophantineEquation2.py
+# 对应实现保留相同的算法逻辑
+class Code01_DiophantineEquation1:
+    __java_fields__ = {'d': 'd', 'x': 'x', 'y': 'y', 'px': 'px', 'py': 'py', 'a': 'a', 'b': 'b', 'c': 'c', 'xd': 'xd', 'yd': 'yd', 'times': 'times'}
+    # 扩展欧几里得算法
+    d = 0
+    x = 0
+    y = 0
+    px = 0
+    py = 0
+    @staticmethod
+    def exgcd(a, b):
+        a = jcast('long', a)
+        b = jcast('long', b)
+        if (b == 0):
+            Code01_DiophantineEquation1.d = jcast('long', a)
+            Code01_DiophantineEquation1.x = jcast('long', 1)
+            Code01_DiophantineEquation1.y = jcast('long', 0)
+        else:
+            Code01_DiophantineEquation1.exgcd(b, jcast('long', jmod(a, b)))
+            Code01_DiophantineEquation1.px = jcast('long', Code01_DiophantineEquation1.x)
+            Code01_DiophantineEquation1.py = jcast('long', Code01_DiophantineEquation1.y)
+            Code01_DiophantineEquation1.x = jcast('long', Code01_DiophantineEquation1.py)
+            Code01_DiophantineEquation1.y = jcast('long', jcast('long', (Code01_DiophantineEquation1.px - jcast('long', (Code01_DiophantineEquation1.py * jcast('long', jdiv(a, b)))))))
+
+    a = 0
+    b = 0
+    c = 0
+    xd = 0
+    yd = 0
+    times = 0
+    @staticmethod
+    def main(args):
+        br = jnew('BufferedReader', jnew('InputStreamReader', jget(System, 'in')))
+        in_ = jnew('StreamTokenizer', br)
+        out = jnew('PrintWriter', jnew('OutputStreamWriter', jget(System, 'out')))
+        jcall(in_, 'nextToken')
+        cases = jcast('int', jcast('int', jget(in_, 'nval')))
+        t = jcast('int', 1)
+        while (t <= cases):
+            jcall(in_, 'nextToken')
+            Code01_DiophantineEquation1.a = jcast('long', jcast('long', jget(in_, 'nval')))
+            jcall(in_, 'nextToken')
+            Code01_DiophantineEquation1.b = jcast('long', jcast('long', jget(in_, 'nval')))
+            jcall(in_, 'nextToken')
+            Code01_DiophantineEquation1.c = jcast('long', jcast('long', jget(in_, 'nval')))
+            Code01_DiophantineEquation1.exgcd(Code01_DiophantineEquation1.a, Code01_DiophantineEquation1.b)
+            # 无整数解
+            if (jcast('long', jmod(Code01_DiophantineEquation1.c, Code01_DiophantineEquation1.d)) != 0):
+                jcall(out, 'println', jcast('int', (-1)))
+                # 有整数解
+            else:
+                Code01_DiophantineEquation1.x = jcast('long', jcast('long', (Code01_DiophantineEquation1.x * jcast('long', jdiv(Code01_DiophantineEquation1.c, Code01_DiophantineEquation1.d)))))
+                Code01_DiophantineEquation1.y = jcast('long', jcast('long', (Code01_DiophantineEquation1.y * jcast('long', jdiv(Code01_DiophantineEquation1.c, Code01_DiophantineEquation1.d)))))
+                Code01_DiophantineEquation1.xd = jcast('long', jcast('long', jdiv(Code01_DiophantineEquation1.b, Code01_DiophantineEquation1.d)))
+                Code01_DiophantineEquation1.yd = jcast('long', jcast('long', jdiv(Code01_DiophantineEquation1.a, Code01_DiophantineEquation1.d)))
+                if (Code01_DiophantineEquation1.x < 0):
+                    # x要想增长到>=1且最小的值，差几个xd，算出来就是k的值
+                    # 那应该是(1-x)/xd，结果向上取整
+                    Code01_DiophantineEquation1.times = jcast('long', jcast('long', jdiv(jcast('long', (jcast('long', jadd(jcast('long', (1 - Code01_DiophantineEquation1.x)), Code01_DiophantineEquation1.xd)) - 1)), Code01_DiophantineEquation1.xd)))
+                    Code01_DiophantineEquation1.x = jcast('long', jcast('long', jadd(Code01_DiophantineEquation1.x, jcast('long', (Code01_DiophantineEquation1.xd * Code01_DiophantineEquation1.times)))))
+                    Code01_DiophantineEquation1.y = jcast('long', jcast('long', (Code01_DiophantineEquation1.y - jcast('long', (Code01_DiophantineEquation1.yd * Code01_DiophantineEquation1.times)))))
+                else:
+                    # x要想减少到>=1且最小的值，差几个xd，算出来就是k的值，向下取整
+                    Code01_DiophantineEquation1.times = jcast('long', jcast('long', jdiv(jcast('long', (Code01_DiophantineEquation1.x - 1)), Code01_DiophantineEquation1.xd)))
+                    Code01_DiophantineEquation1.x = jcast('long', jcast('long', (Code01_DiophantineEquation1.x - jcast('long', (Code01_DiophantineEquation1.xd * Code01_DiophantineEquation1.times)))))
+                    Code01_DiophantineEquation1.y = jcast('long', jcast('long', jadd(Code01_DiophantineEquation1.y, jcast('long', (Code01_DiophantineEquation1.yd * Code01_DiophantineEquation1.times)))))
+                # 此时得到的(x, y)，是x为最小正整数时的一组解
+                # 然后继续讨论
+                # 无正整数解
+                if (Code01_DiophantineEquation1.y <= 0):
+                    # x能取得的最小正数
+                    jcall(out, 'print', jadd(Code01_DiophantineEquation1.x, ' '))
+                    # y能取得的最小正数
+                    jcall(out, 'println', jcast('long', jadd(Code01_DiophantineEquation1.y, jcast('long', (Code01_DiophantineEquation1.yd * jcast('long', jdiv(jcast('long', (jcast('long', jadd(jcast('long', (1 - Code01_DiophantineEquation1.y)), Code01_DiophantineEquation1.yd)) - 1)), Code01_DiophantineEquation1.yd)))))))
+                    # 有正整数解
+                else:
+                    # y减少到1以下，能减几次，就是正整数解的个数
+                    jcall(out, 'print', jadd(jcast('long', jadd(jcast('long', jdiv(jcast('long', (Code01_DiophantineEquation1.y - 1)), Code01_DiophantineEquation1.yd)), 1)), ' '))
+                    # x能取得的最小正数
+                    jcall(out, 'print', jadd(Code01_DiophantineEquation1.x, ' '))
+                    # y能取得的最小正数
+                    jcall(out, 'print', jadd(jcast('long', (Code01_DiophantineEquation1.y - jcast('long', (jcast('long', jdiv(jcast('long', (Code01_DiophantineEquation1.y - 1)), Code01_DiophantineEquation1.yd)) * Code01_DiophantineEquation1.yd)))), ' '))
+                    # x能取得的最大正数
+                    jcall(out, 'print', jadd(jcast('long', jadd(Code01_DiophantineEquation1.x, jcast('long', (jcast('long', jdiv(jcast('long', (Code01_DiophantineEquation1.y - 1)), Code01_DiophantineEquation1.yd)) * Code01_DiophantineEquation1.xd)))), ' '))
+                    # y能取得的最大正数
+                    jcall(out, 'println', Code01_DiophantineEquation1.y)
+            t = jcast('int', (t + 1))
+        jcall(out, 'flush')
+        jcall(out, 'close')
+        jcall(br, 'close')
+
+    def __init__(self, *args, _java_ctor=None):
+        if args:
+            raise TypeError('This class has a no-argument constructor')
+
+
+Code01_DiophantineEquation1.d = jcast('long', 0)
+Code01_DiophantineEquation1.x = jcast('long', 0)
+Code01_DiophantineEquation1.y = jcast('long', 0)
+Code01_DiophantineEquation1.px = jcast('long', 0)
+Code01_DiophantineEquation1.py = jcast('long', 0)
+Code01_DiophantineEquation1.a = jcast('long', 0)
+Code01_DiophantineEquation1.b = jcast('long', 0)
+Code01_DiophantineEquation1.c = jcast('long', 0)
+Code01_DiophantineEquation1.xd = jcast('long', 0)
+Code01_DiophantineEquation1.yd = jcast('long', 0)
+Code01_DiophantineEquation1.times = jcast('long', 0)
+
+if __name__ == '__main__':
+    Code01_DiophantineEquation1.main([])
