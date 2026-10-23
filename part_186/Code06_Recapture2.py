@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# Python 3 算法实现；中文题意、算法说明与原课程顺序对应。
 from pathlib import Path as _Path
 import sys as _sys
 _root = str(_Path(__file__).resolve().parent.parent)
